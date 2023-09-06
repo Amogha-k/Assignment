@@ -1,0 +1,73 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer List</title>
+</head>
+
+<body>
+    <h1>Customer List</h1>
+    <div id="customerList"></div>
+    <button ><a href="addcustomer.html"> Add Customer</a></button>
+    <script>
+        const bearerToken = "dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM=";
+        const apiUrl = "http://localhost:8080/https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list";
+        const headers = new Headers({
+            "Authorization": "Bearer " + bearerToken,
+        });
+        const request = new Request(apiUrl, {
+            method: "GET",
+            headers: headers,
+        });
+
+        const customerListContainer = document.getElementById("customerList");
+
+        fetch(request)
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json(); 
+                } else {
+                    console.error("Failed to get customer list. Status code: " + response.status);
+                    throw new Error("Failed to get customer list.");
+                }
+            })
+            .then(data => {
+                // Create an HTML table to display the data
+                const table = document.createElement("table");
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Street</th>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                `;
+                data.forEach(customer => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${customer.first_name} ${customer.last_name}</td>
+                        <td>${customer.street}</td>
+                        <td>${customer.address}</td>
+                        <td>${customer.city}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone}</td>
+                    `;
+                    table.querySelector("tbody").appendChild(row);
+                });
+                customerListContainer.appendChild(table);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Customer Registration Form</title>
+</head>
+
+<body>
+    <h1>Customer Registration Form</h1>
+    <form id="customerForm">
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required><br><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required><br><br>
+
+        <label for="street">Street:</label>
+        <input type="text" id="street" name="street" required><br><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required><br><br>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required><br><br>
+
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br><br>
+
+        <input type="submit" value="submit">
+    </form>
+
+    <script>
+        document.getElementById("customerForm").addEventListener("submit", function (event) {
+            event.preventDefault(); 
+
+            // Collect form data
+            const formData = {
+                first_name: document.getElementById("first_name").value,
+                last_name: document.getElementById("last_name").value,
+                street: document.getElementById("street").value,
+                address: document.getElementById("address").value,
+                city: document.getElementById("city").value,
+                state: document.getElementById("state").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+            };
+
+            // Convert form data to JSON
+            const requestBody = JSON.stringify(formData);
+
+            // Define your bearer token and API URL here
+            const bearerToken = "dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM=";
+            const apiUrl = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=create";
+
+            // Create headers for the request
+            const headers = new Headers({
+                "Authorization": "Bearer " + bearerToken,
+                "Content-Type": "application/json"
+            });
+
+           
+            const request = new Request(apiUrl, {
+                method: "POST",
+                headers: headers,
+                body: requestBody
+            });
+
+            // Send the POST request
+            fetch(request)
+                .then(response => {
+                    if (response.status === 201) {
+                        alert("Customer created successfully."); 
+                    } else if (response.status === 400) {
+                        return response.text().then(errorBody => {
+                            console.error("Failed to create customer. First Name or Last Name is missing.");
+                            console.error("Response: " + errorBody);
+                            return Promise.reject("Failed to create customer.");
+                        });
+                    } else {
+                        console.error("Failed to create customer. Status code: " + response.status);
+                        return Promise.reject("Failed to create customer.");
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    </script>
+</body>
+
+</html>
